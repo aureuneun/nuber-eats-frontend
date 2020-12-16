@@ -1,6 +1,8 @@
 import { gql, useMutation } from '@apollo/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/button';
 import { FormError } from '../components/form-error';
 import {
   loginMutation,
@@ -23,7 +25,15 @@ interface ILoginForm {
 }
 
 export const Login = () => {
-  const { register, getValues, errors, handleSubmit } = useForm<ILoginForm>();
+  const {
+    register,
+    getValues,
+    errors,
+    handleSubmit,
+    formState,
+  } = useForm<ILoginForm>({
+    mode: 'onChange',
+  });
   const onCompleted = (data: loginMutation) => {
     const {
       login: { ok, token },
@@ -52,10 +62,19 @@ export const Login = () => {
     }
   };
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-800">
-      <div className="bg-white w-full max-w-lg pt-5 pb-7 rounded-lg text-center">
-        <h3 className="font-bold text-2xl text-gray-800">Log In</h3>
-        <form className="grid gap-3 mt-5 px-5" onSubmit={handleSubmit(onValid)}>
+    <div className="h-screen flex flex-col items-center mt-8 md:mt-24">
+      <div className="w-full max-w-screen-sm flex flex-col items-center px-4 md:px-11 ">
+        <img
+          src="https://d1a3f4spazzrp4.cloudfront.net/arch-frontend/1.1.1/d1a3f4spazzrp4.cloudfront.net/eats/eats-logo-1a01872c77.svg"
+          alt="logo"
+          className="w-48"
+        />
+        <h2 className="self-start text-3xl my-9 md:mt-16">Welcome back</h2>
+        <h5 className="self-start mb-2">Sign in with your email address.</h5>
+        <form
+          className="grid gap-3 w-full mb-4"
+          onSubmit={handleSubmit(onValid)}
+        >
           <input
             ref={register({ required: 'Email is required' })}
             name="email"
@@ -79,11 +98,17 @@ export const Login = () => {
           {errors.password?.type === 'minLength' && (
             <FormError error="Password must be more than 4 chars" />
           )}
-          <button className="btn">{loading ? 'Loading...' : 'Log In'}</button>
+          <Button isValid={formState.isValid} loading={loading} text="Log In" />
           {loginResults?.login.error && (
             <FormError error={loginResults.login.error} />
           )}
         </form>
+        <div>
+          New to Uber?{' '}
+          <Link to="/create-account" className="text-lime-600 hover:underline">
+            Create an account
+          </Link>
+        </div>
       </div>
     </div>
   );
