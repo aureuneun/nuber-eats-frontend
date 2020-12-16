@@ -1,7 +1,9 @@
 import { gql, useMutation } from '@apollo/client';
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { isLoggedInVar } from '../apollo';
 import { Button } from '../components/button';
 import { FormError } from '../components/form-error';
 import {
@@ -40,6 +42,7 @@ export const Login = () => {
     } = data;
     if (ok) {
       console.log(token);
+      isLoggedInVar(true);
     }
   };
   const [loginMutation, { data: loginResults, loading }] = useMutation<
@@ -63,6 +66,9 @@ export const Login = () => {
   };
   return (
     <div className="h-screen flex flex-col items-center mt-8 md:mt-24">
+      <Helmet>
+        <title>Log In</title>
+      </Helmet>
       <div className="w-full max-w-screen-sm flex flex-col items-center px-4 md:px-11 ">
         <img
           src="https://d1a3f4spazzrp4.cloudfront.net/arch-frontend/1.1.1/d1a3f4spazzrp4.cloudfront.net/eats/eats-logo-1a01872c77.svg"
@@ -76,7 +82,10 @@ export const Login = () => {
           onSubmit={handleSubmit(onValid)}
         >
           <input
-            ref={register({ required: 'Email is required' })}
+            ref={register({
+              required: 'Email is required',
+              pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            })}
             name="email"
             type="email"
             required
@@ -84,6 +93,9 @@ export const Login = () => {
             className="input"
           />
           {errors.email?.message && <FormError error={errors.email?.message} />}
+          {errors.email?.type === 'pattern' && (
+            <FormError error="Please enter a valid email" />
+          )}
           <input
             ref={register({ required: 'Password is required', minLength: 4 })}
             name="password"
