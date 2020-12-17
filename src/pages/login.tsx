@@ -1,11 +1,12 @@
 import { gql, useMutation } from '@apollo/client';
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { isLoggedInVar } from '../apollo';
+import { authTokenVar, isLoggedInVar } from '../apollo';
 import { Button } from '../components/button';
 import { FormError } from '../components/form-error';
+import { LS_TOKEN } from '../constants';
 import {
   loginMutation,
   loginMutationVariables,
@@ -40,8 +41,9 @@ export const Login = () => {
     const {
       login: { ok, token },
     } = data;
-    if (ok) {
-      console.log(token);
+    if (ok && token) {
+      localStorage.setItem(LS_TOKEN, token);
+      authTokenVar(token);
       isLoggedInVar(true);
     }
   };
@@ -84,7 +86,7 @@ export const Login = () => {
           <input
             ref={register({
               required: 'Email is required',
-              pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+              pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
             name="email"
             type="email"
