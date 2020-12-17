@@ -71,7 +71,7 @@ export const Login = () => {
       <Helmet>
         <title>Log In</title>
       </Helmet>
-      <div className="w-full max-w-screen-sm flex flex-col items-center px-4 md:px-11 ">
+      <div className="w-full max-w-screen-sm flex flex-col items-center px-4">
         <img
           src="https://d1a3f4spazzrp4.cloudfront.net/arch-frontend/1.1.1/d1a3f4spazzrp4.cloudfront.net/eats/eats-logo-1a01872c77.svg"
           alt="logo"

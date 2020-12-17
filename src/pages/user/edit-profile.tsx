@@ -83,11 +83,11 @@ export const EditProfile = () => {
     }
   };
   return (
-    <div className="h-screen flex flex-col items-center mt-8 md:mt-24">
+    <div className="h-screen flex flex-col items-center mt-24">
       <Helmet>
         <title>Edit Profile</title>
       </Helmet>
-      <div className="w-full max-w-screen-sm flex flex-col justify-center items-center">
+      <div className="w-full max-w-screen-sm flex flex-col items-center px-4">
         <h2 className="self-start text-3xl mb-9">Edit Profile</h2>
         <h5 className="self-start mb-2">Sign in with your email address.</h5>
         <form
