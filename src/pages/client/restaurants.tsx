@@ -1,7 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { Restaurant } from '../../components/restaurant';
+import { RESTAURANT_FRAGMENT } from '../../fragment';
 import {
   allRestaurants,
   allRestaurantsVariables,
@@ -26,18 +29,16 @@ const ALL_RESTAURANTS_QUERY = gql`
       totalPages
       totalResults
       restaurants {
-        id
-        name
-        coverImg
-        address
-        category {
-          name
-        }
-        isPromoted
+        ...RestaurantParts
       }
     }
   }
+  ${RESTAURANT_FRAGMENT}
 `;
+
+interface IFormProps {
+  term: string;
+}
 
 export const Restaurants = () => {
   const [page, setPage] = useState(1);
@@ -51,13 +52,37 @@ export const Restaurants = () => {
       },
     }
   );
+  const history = useHistory();
+  const { register, handleSubmit, getValues } = useForm<IFormProps>({
+    mode: 'onChange',
+  });
+  const onVaild = () => {
+    const { term } = getValues();
+    history.push({
+      pathname: '/search',
+      search: `term=${term}`,
+    });
+  };
   return (
     <div>
       <Helmet>
         <title>Nuber eats</title>
       </Helmet>
-      <form className="bg-gray-800  w-screen py-32 flex items-center justify-center">
-        <input name="search" className="input w-3/12" placeholder="Search" />
+      <form
+        onSubmit={handleSubmit(onVaild)}
+        className="bg-gray-800  w-screen py-32 flex items-center justify-center"
+      >
+        <input
+          ref={register({
+            required: true,
+            pattern: /[A-Za-z]/,
+            minLength: 3,
+          })}
+          name="term"
+          type="search"
+          className="input w-3/12"
+          placeholder="Search"
+        />
       </form>
       {!loading && (
         <div className="px-8 flex flex-col items-center">
@@ -78,7 +103,7 @@ export const Restaurants = () => {
               </div>
             ))}
           </div>
-          <div className="grid grid-flow-row auto-rows-max sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center">
+          <div className="grid grid-flow-row auto-rows-max md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center">
             {data?.allRestaurants.restaurants?.map((restaurant) => (
               <Restaurant
                 key={restaurant.id}
