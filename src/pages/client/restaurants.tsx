@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { Category } from '../../components/category';
 import { Restaurant } from '../../components/restaurant';
-import { RESTAURANT_FRAGMENT } from '../../fragment';
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragment';
 import {
   allRestaurants,
   allRestaurantsVariables,
@@ -16,11 +17,7 @@ const ALL_RESTAURANTS_QUERY = gql`
       ok
       error
       categories {
-        id
-        name
-        coverImg
-        slug
-        restaurantCount
+        ...CategoryParts
       }
     }
     allRestaurants(input: $restaurantsInput) {
@@ -34,6 +31,7 @@ const ALL_RESTAURANTS_QUERY = gql`
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${CATEGORY_FRAGMENT}
 `;
 
 interface IFormProps {
@@ -88,19 +86,13 @@ export const Restaurants = () => {
         <div className="px-8 flex flex-col items-center">
           <div className="grid grid-flow-col auto-cols-fr gap-10 my-10">
             {data?.allCategories.categories?.map((category) => (
-              <div
+              <Category
                 key={category.id}
-                className="group flex flex-col items-center justify-center cursor-pointer"
-              >
-                <img
-                  src={category.coverImg || ''}
-                  alt="category"
-                  className="w-16 h-16 rounded-full bg-red-200"
-                />
-                <h5 className="text-sm group-hover:text-gray-400 mt-2">
-                  {category.name}
-                </h5>
-              </div>
+                id={category.id}
+                slug={category.slug}
+                coverImg={category.coverImg || ''}
+                name={category.name}
+              />
             ))}
           </div>
           <div className="grid grid-flow-row auto-rows-max md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center">
