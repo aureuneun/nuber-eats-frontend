@@ -53,7 +53,7 @@ export const ConfirmEmail = () => {
         },
       },
     });
-  }, []);
+  }, [verifyEmail]);
   return (
     <div className="mt-52 flex flex-col justify-center items-center">
       <Helmet>

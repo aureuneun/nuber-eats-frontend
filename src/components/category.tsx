@@ -15,7 +15,7 @@ export const Category: React.FC<ICatogoryProps> = ({
   name,
 }) => {
   return (
-    <Link key={id} to={`/category/${slug}`}>
+    <Link to={`/category/${slug}`}>
       <div className="group flex flex-col items-center justify-center cursor-pointer">
         <img
           src={coverImg}
