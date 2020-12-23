@@ -11,7 +11,7 @@ import {
 } from '../__generated__/createAccountMutation';
 import { UserRole } from '../__generated__/globalTypes';
 
-const CREATE_ACCOUNT_MUTATION = gql`
+export const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
     createAccount(input: $createAccountInput) {
       ok
@@ -55,18 +55,16 @@ export const CreateAccount = () => {
     }
   );
   const onValid = () => {
-    if (!loading) {
-      const { email, password, role } = getValues();
-      createAccountMutation({
-        variables: {
-          createAccountInput: {
-            email,
-            password,
-            role,
-          },
+    const { email, password, role } = getValues();
+    createAccountMutation({
+      variables: {
+        createAccountInput: {
+          email,
+          password,
+          role,
         },
-      });
-    }
+      },
+    });
   };
   return (
     <div className="h-screen flex flex-col items-center mt-8 md:mt-24">

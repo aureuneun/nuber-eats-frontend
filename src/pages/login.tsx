@@ -12,7 +12,7 @@ import {
   loginMutationVariables,
 } from '../__generated__/loginMutation';
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
@@ -54,17 +54,15 @@ export const Login = () => {
     onCompleted,
   });
   const onValid = () => {
-    if (!loading) {
-      const { email, password } = getValues();
-      loginMutation({
-        variables: {
-          loginInput: {
-            email,
-            password,
-          },
+    const { email, password } = getValues();
+    loginMutation({
+      variables: {
+        loginInput: {
+          email,
+          password,
         },
-      });
-    }
+      },
+    });
   };
   return (
     <div className="h-screen flex flex-col items-center mt-8 md:mt-24">

@@ -7,7 +7,11 @@ interface IButtonProps {
 }
 
 export const Button: React.FC<IButtonProps> = ({ isValid, loading, text }) => (
-  <button className={`btn ${isValid ? '' : 'bg-gray-200 pointer-events-none'}`}>
+  <button
+    className={`btn ${
+      isValid && !loading ? '' : 'bg-gray-200 pointer-events-none'
+    }`}
+  >
     {loading ? 'Loading...' : text}
   </button>
 );
