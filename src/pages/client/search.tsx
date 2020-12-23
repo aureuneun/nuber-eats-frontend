@@ -1,9 +1,10 @@
 import { gql, useLazyQuery } from '@apollo/client';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Restaurant } from '../../components/restaurant';
 import { RESTAURANT_FRAGMENT } from '../../fragment';
+import { useQueries } from '../../hooks/useQueries';
 import {
   searchRestaurant,
   searchRestaurantVariables,
@@ -25,14 +26,13 @@ const SEARCH_RESTAURANT = gql`
 `;
 
 export const Search = () => {
-  const location = useLocation();
+  const [query] = useQueries(['term']);
   const history = useHistory();
   const [searchRestaurantQuery, { data }] = useLazyQuery<
     searchRestaurant,
     searchRestaurantVariables
   >(SEARCH_RESTAURANT);
   useEffect(() => {
-    const [_, query] = location.search.split('?term=');
     if (!query) {
       return history.replace('/');
     }
@@ -44,7 +44,7 @@ export const Search = () => {
         },
       },
     });
-  }, [history, location, searchRestaurantQuery]);
+  }, [history, query, searchRestaurantQuery]);
   return (
     <div className="grid grid-flow-row auto-rows-max md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center">
       <Helmet>

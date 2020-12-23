@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useHistory } from 'react-router-dom';
 import { useMe } from '../../hooks/useMe';
+import { useQueries } from '../../hooks/useQueries';
 import {
   verifyEmail,
   verifyEmailVariables,
@@ -18,6 +19,7 @@ const VERITY_EMAIL_MUTATION = gql`
 `;
 
 export const ConfirmEmail = () => {
+  const [code] = useQueries(['code']);
   const history = useHistory();
   const { data: userData } = useMe();
   const client = useApolloClient();
@@ -45,7 +47,6 @@ export const ConfirmEmail = () => {
     { onCompleted }
   );
   useEffect(() => {
-    const [_, code] = window.location.href.split('code=');
     verifyEmail({
       variables: {
         verifyEmailInput: {
@@ -53,7 +54,7 @@ export const ConfirmEmail = () => {
         },
       },
     });
-  }, [verifyEmail]);
+  }, [code, verifyEmail]);
   return (
     <div className="mt-52 flex flex-col justify-center items-center">
       <Helmet>
