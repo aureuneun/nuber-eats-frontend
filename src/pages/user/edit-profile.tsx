@@ -1,4 +1,4 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client';
+import { ApolloCache, FetchResult, gql, useMutation } from '@apollo/client';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
@@ -25,19 +25,18 @@ interface IEditFormProps {
 }
 
 export const EditProfile = () => {
-  const client = useApolloClient();
   const { data: userData } = useMe();
-  const onCompleted = (data: editProfile) => {
-    const {
-      editProfile: { ok },
-    } = data;
-    if (ok && userData) {
+  const update = (
+    cache: ApolloCache<editProfile>,
+    { data }: FetchResult<editProfile, Record<string, any>, Record<string, any>>
+  ) => {
+    if (userData) {
       const {
         me: { id, email: prevEmail },
       } = userData;
       const { email: newEmail } = getValues();
       if (prevEmail !== newEmail) {
-        client.writeFragment({
+        cache.writeFragment({
           id: `User:${id}`,
           fragment: gql`
             fragment EditedUser on User {
@@ -56,7 +55,7 @@ export const EditProfile = () => {
   const [editProfile, { loading }] = useMutation<
     editProfile,
     editProfileVariables
-  >(EDIT_PROFILE_MUTATION, { onCompleted });
+  >(EDIT_PROFILE_MUTATION, { update });
   const {
     register,
     handleSubmit,
@@ -70,12 +69,15 @@ export const EditProfile = () => {
     mode: 'onChange',
   });
   const onValid = () => {
-    if (!loading) {
-      const { email, password } = getValues();
+    if (userData) {
+      const {
+        me: { email: prevEmail },
+      } = userData;
+      const { email: newEmail, password } = getValues();
       editProfile({
         variables: {
           editProfileInput: {
-            email,
+            ...(prevEmail !== newEmail && { email: newEmail }),
             ...(password !== '' && { password }),
           },
         },
