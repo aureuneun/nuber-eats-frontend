@@ -3,11 +3,23 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
 import { Dish } from '../../components/dish';
-import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragment';
+import {
+  DISH_FRAGMENT,
+  ORDER_FRAGMENT,
+  RESTAURANT_FRAGMENT,
+} from '../../fragment';
 import {
   myRestaurant,
   myRestaurantVariables,
 } from '../../__generated__/myRestaurant';
+import {
+  VictoryLine,
+  VictoryChart,
+  VictoryVoronoiContainer,
+  VictoryAxis,
+  VictoryTheme,
+  VictoryLabel,
+} from 'victory';
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -19,11 +31,15 @@ export const MY_RESTAURANT_QUERY = gql`
         menu {
           ...DishParts
         }
+        orders {
+          ...OrderParts
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
   ${DISH_FRAGMENT}
+  ${ORDER_FRAGMENT}
 `;
 
 interface IMyRestaurantParams {
@@ -84,6 +100,36 @@ export const MyRestaurant = () => {
             ))}
           </div>
         )}
+        <div>
+          <VictoryChart
+            maxDomain={{ y: 40000 }}
+            minDomain={{ y: 0 }}
+            theme={VictoryTheme.material}
+            domainPadding={10}
+            height={400}
+            width={window.innerWidth}
+            containerComponent={<VictoryVoronoiContainer />}
+          >
+            <VictoryLine
+              labels={({ datum }) => `${datum.y / 10000}만원`}
+              labelComponent={<VictoryLabel renderInPortal dy={-20} />}
+              data={data?.myRestaurant.restaurant?.orders.map((order) => ({
+                x: order.createdAt,
+                y: order.total,
+              }))}
+              interpolation="natural"
+            />
+            <VictoryAxis
+              dependentAxis
+              tickFormat={(tick) => `${tick / 10000}만원`}
+            />
+            <VictoryAxis
+              tickFormat={(tick) =>
+                `${new Date(tick).toLocaleDateString('ko').split('.')[2]}일`
+              }
+            />
+          </VictoryChart>
+        </div>
       </div>
     </div>
   );
