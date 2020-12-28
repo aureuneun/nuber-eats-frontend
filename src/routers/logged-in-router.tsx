@@ -7,7 +7,9 @@ import { Category } from '../pages/client/category';
 import { Restaurant } from '../pages/client/restaurant';
 import { Restaurants } from '../pages/client/restaurants';
 import { Search } from '../pages/client/search';
+import { AddDish } from '../pages/owner/add-dish';
 import { AddRestaurant } from '../pages/owner/add-restaurant';
+import { MyRestaurant } from '../pages/owner/my-restaurant';
 import { MyRestaurants } from '../pages/owner/my-restaurants';
 import { ConfirmEmail } from '../pages/user/confirm-email';
 import { EditProfile } from '../pages/user/edit-profile';
@@ -51,6 +53,14 @@ const restaurantRoutes = [
   {
     path: '/add-restaurant',
     component: <AddRestaurant />,
+  },
+  {
+    path: '/restaurant/:id',
+    component: <MyRestaurant />,
+  },
+  {
+    path: '/restaurant/:id/add-dish',
+    component: <AddDish />,
   },
 ];
 

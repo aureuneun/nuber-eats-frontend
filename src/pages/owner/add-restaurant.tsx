@@ -105,7 +105,7 @@ export const AddRestaurant = () => {
         <title>Add Restaurant</title>
       </Helmet>
       <div className="w-full max-w-screen-sm flex flex-col items-center px-4">
-        <h2>Add Restaurant</h2>
+        <h2 className="self-start text-3xl my-9 md:mt-16">Add Restaurant</h2>
         <form
           onSubmit={handleSubmit(onValid)}
           className="grid gap-3 w-full mb-4"
