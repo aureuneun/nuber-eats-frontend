@@ -41,7 +41,7 @@
     "apollo:codegen": "rimraf src/__generated__ && apollo client:codegen src/__generated__ --target=typescript --outputFlat",
     "prestart": "yarn apollo:codegen",
     "start": "craco start",
-    "build": "craco build",
+    "build": "CI=false craco build",
     "test": "craco test",
     "test:cov": "yarn test --coverage --watchAll=false",
     "eject": "react-scripts eject"
