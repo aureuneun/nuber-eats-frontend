@@ -16,6 +16,7 @@ export const ORDER_QUERY = gql`
       error
       order {
         ...FullOrderParts
+        address
       }
     }
   }
@@ -26,6 +27,7 @@ export const ORDER_SUBSCRIPTION = gql`
   subscription orderUpdates($input: OrderUpdatesInput!) {
     orderUpdates(input: $input) {
       ...FullOrderParts
+      address
     }
   }
   ${FULL_ORDER_FRAGMENT}
@@ -103,7 +105,7 @@ export const Order = () => {
       <Helmet>
         <title>Order</title>
       </Helmet>
-      <div className="mt-32 container flex justify-center">
+      <div className="mt-24 flex justify-center">
         <div className="border border-gray-800 w-full max-w-screen-sm flex flex-col justify-center">
           <h4 className="bg-gray-800 w-full py-5 text-white text-center text-xl">
             Order #{id}
@@ -122,6 +124,12 @@ export const Order = () => {
               Deliver To:{' '}
               <span className="font-medium">
                 {data?.getOrder.order?.customer?.email}
+              </span>
+            </div>
+            <div className="border-t pt-5 border-gray-700 ">
+              Address:{' '}
+              <span className="font-medium">
+                {data?.getOrder.order?.address}
               </span>
             </div>
             <div className="border-t border-b py-5 border-gray-700">

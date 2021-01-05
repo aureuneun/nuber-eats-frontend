@@ -5,6 +5,7 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { Dish } from '../../components/dish';
 import { DishOption } from '../../components/dish-option';
+import { Modal } from '../../components/modal';
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragment';
 import {
   createOrder,
@@ -52,6 +53,7 @@ interface IRestaurantParams {
 
 export const Restaurant = () => {
   const history = useHistory();
+  const [orderState, setOrderState] = useState(false);
   const [orderItems, setOrderItems] = useState<CreateOrderItemInput[]>([]);
   const { id } = useParams<IRestaurantParams>();
   const { data } = useQuery<restaurant, restaurantVariables>(RESTAURANT_QUERY, {
@@ -128,13 +130,13 @@ export const Restaurant = () => {
       }
     }
   };
-  const onClick = () => {
-    console.log(orderItems);
+  const onClick = (address: string) => {
     createOrder({
       variables: {
         input: {
           restaurantId: +id,
           items: orderItems,
+          address,
         },
       },
     });
@@ -144,6 +146,7 @@ export const Restaurant = () => {
       <Helmet>
         <title>Restaurant</title>
       </Helmet>
+      {orderState && <Modal onClick={onClick} />}
       <div
         className="bg-red-200 py-32 bg-cover bg-center"
         style={{
@@ -167,7 +170,9 @@ export const Restaurant = () => {
       <div className="mt-10 px-8">
         <div className="text-center mb-10">
           <Button
-            onClick={onClick}
+            onClick={() => {
+              setOrderState(true);
+            }}
             isValid={isValid()}
             loading={loading}
             text="| Order now |"

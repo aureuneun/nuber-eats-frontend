@@ -11,6 +11,7 @@ export const COOKED_ORDER_SUBSCRIPTION = gql`
   subscription cookedOrder {
     cookedOrder {
       ...FullOrderParts
+      address
     }
   }
   ${FULL_ORDER_FRAGMENT}
@@ -38,9 +39,11 @@ interface IDriverProps {
 const Driver: React.FC<IDriverProps> = () => <div className="text-lg">🚘</div>;
 
 export const Dashboard = () => {
-  const [driverCoords, setDriverCoords] = useState<ICoords>({ lat: 0, lng: 0 });
+  const [driverCoords, setDriverCoords] = useState<ICoords>({
+    lat: 37.56638022169837,
+    lng: 126.97797728476849,
+  });
   const [map, setMap] = useState<google.maps.Map>();
-  const [maps, setMaps] = useState<any>();
   const onSuccess = ({
     coords: { latitude: lat, longitude: lng },
   }: GeolocationPosition) => {
@@ -55,53 +58,51 @@ export const Dashboard = () => {
     });
   }, []);
   useEffect(() => {
-    if (map && maps) {
+    if (map) {
       map.panTo(new google.maps.LatLng(driverCoords.lat, driverCoords.lng));
     }
-    /*     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode(
-      {
-        location: new google.maps.LatLng(driverCoords.lat, driverCoords.lng),
-      },
-      (results, status) => {
-        console.log(status, results);
-      }
-    ); */
-  }, [driverCoords, map, maps]);
-  const handleApiLoaded = ({
-    map,
-    maps,
-  }: {
-    map: google.maps.Map;
-    maps: any;
-  }) => {
+  }, [driverCoords]);
+  const onApiLoaded = ({ map, maps }: { map: google.maps.Map; maps: any }) => {
     map.panTo(new google.maps.LatLng(driverCoords.lat, driverCoords.lng));
     setMap(map);
-    setMaps(maps);
   };
-  const makeRoute = () => {
+  const geocodingApi = () => {
+    if (map) {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode(
+        {
+          address: subscriptionData?.cookedOrder.address,
+        },
+        (results, status) => {
+          if (status === 'OK') {
+            const [result] = results;
+            const {
+              geometry: {
+                location: { lat, lng },
+              },
+            } = result;
+            directionsApi(lat(), lng());
+          }
+        }
+      );
+    }
+  };
+  const directionsApi = (lat: number, lng: number) => {
     if (map) {
       const directionsService = new google.maps.DirectionsService();
       const directionsRenderer = new google.maps.DirectionsRenderer();
       directionsRenderer.setMap(map);
       directionsService.route(
         {
-          origin: {
-            location: new google.maps.LatLng(
-              driverCoords.lat,
-              driverCoords.lng
-            ),
-          },
-          destination: {
-            location: new google.maps.LatLng(
-              driverCoords.lat + 0.05,
-              driverCoords.lng + 0.05
-            ),
-          },
-          travelMode: google.maps.TravelMode.DRIVING,
+          origin: new google.maps.LatLng(driverCoords.lat, driverCoords.lng),
+          // destination: new google.maps.LatLng(lat, lng),
+          destination: subscriptionData?.cookedOrder.address,
+          travelMode: google.maps.TravelMode.TRANSIT,
         },
         (result, status) => {
-          directionsRenderer.setDirections(result);
+          if (status === 'OK') {
+            directionsRenderer.setDirections(result);
+          }
         }
       );
     }
@@ -111,7 +112,7 @@ export const Dashboard = () => {
   );
   useEffect(() => {
     if (subscriptionData?.cookedOrder.id) {
-      makeRoute();
+      geocodingApi();
     }
   }, [subscriptionData]);
   const history = useHistory();
@@ -129,26 +130,26 @@ export const Dashboard = () => {
       <Helmet>
         <title>Dashboard</title>
       </Helmet>
-      <div style={{ height: '50vh', width: '100%' }}>
+      <div style={{ height: '65vh', width: '100%' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key: 'AIzaSyBPcmfTW63hJB45K7mKYcHo7oao0uP2UcE' }}
           defaultCenter={{ lat: 37.3939212, lng: 126.6796107 }}
           defaultZoom={15}
           yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={handleApiLoaded}
+          onGoogleApiLoaded={onApiLoaded}
         >
           <Driver lat={driverCoords.lat} lng={driverCoords.lng} />
         </GoogleMapReact>
       </div>
-      <div className=" max-w-screen-sm mx-auto bg-white relative -top-10 shadow-lg py-8 px-5">
+      <div className="max-w-md mx-auto bg-white shadow-2xl p-6 my-5">
         {subscriptionData?.cookedOrder.restaurant ? (
           <>
-            <h1 className="text-center  text-3xl font-medium">
+            <h1 className="text-center text-2xl font-medium">
               New Coocked Order
             </h1>
-            <h1 className="text-center my-3 text-2xl font-medium">
+            <h3 className="text-center my-3 text-lg font-medium">
               Pick it up soon @ {subscriptionData?.cookedOrder.restaurant?.name}
-            </h1>
+            </h3>
             <button
               className="btn w-full  block  text-center mt-5"
               onClick={() => {
@@ -165,7 +166,7 @@ export const Dashboard = () => {
             </button>
           </>
         ) : (
-          <h1 className="text-center  text-3xl font-medium">
+          <h1 className="text-center  text-2xl font-medium">
             No orders yet...
           </h1>
         )}

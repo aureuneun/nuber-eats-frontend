@@ -32,6 +32,7 @@ export interface getOrder_getOrder_order {
   driver: getOrder_getOrder_order_driver | null;
   customer: getOrder_getOrder_order_customer | null;
   restaurant: getOrder_getOrder_order_restaurant | null;
+  address: string;
 }
 
 export interface getOrder_getOrder {

@@ -32,6 +32,7 @@ export interface cookedOrder_cookedOrder {
   driver: cookedOrder_cookedOrder_driver | null;
   customer: cookedOrder_cookedOrder_customer | null;
   restaurant: cookedOrder_cookedOrder_restaurant | null;
+  address: string;
 }
 
 export interface cookedOrder {

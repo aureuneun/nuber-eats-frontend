@@ -32,6 +32,7 @@ export interface orderUpdates_orderUpdates {
   driver: orderUpdates_orderUpdates_driver | null;
   customer: orderUpdates_orderUpdates_customer | null;
   restaurant: orderUpdates_orderUpdates_restaurant | null;
+  address: string;
 }
 
 export interface orderUpdates {

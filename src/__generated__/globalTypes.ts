@@ -43,6 +43,7 @@ export interface CreateDishInput {
 export interface CreateOrderInput {
   restaurantId: number;
   items: CreateOrderItemInput[];
+  address: string;
 }
 
 export interface CreateOrderItemInput {
